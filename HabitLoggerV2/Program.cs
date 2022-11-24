@@ -14,10 +14,11 @@ namespace HabitLogger
                 connection.Open();
 
                 var tableCmd = connection.CreateCommand();
-                tableCmd.CommandText = @"CREATE TABLE NOT EXISTS drinking_water
-                                        Id INTEGER PRIMARY KEY AUTOINCREMENT
-                                        Date TEXT
-                                        Quantity INTEGER";
+                tableCmd.CommandText = @"CREATE TABLE IF NOT EXISTS drinking_water (
+                                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                        Date TEXT,
+                                        Quantity INTEGER
+                                        )";
 
                 tableCmd.ExecuteNonQuery();
                 connection.Close();

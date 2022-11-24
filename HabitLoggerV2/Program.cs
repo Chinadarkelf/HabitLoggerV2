@@ -7,14 +7,15 @@ namespace HabitLogger
         static void Main(string[] args)
         {
             // path for Sqlite connection
-            var connectionString = @"Data Source=habit-Tracker.db";
+            string connectionString = @"Data Source=C:\Users\joeyj\Documents\VSProjects\CSharpAcademy\HabitLoggerV2\HabitLoggerV2\habit-Tracker.db";
 
             using (var connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
 
                 var tableCmd = connection.CreateCommand();
-                tableCmd.CommandText = @"CREATE TABLE IF NOT EXISTS drinking_water (
+                tableCmd.CommandText = 
+                    @"CREATE TABLE IF NOT EXISTS drinking_water (
                                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                                         Date TEXT,
                                         Quantity INTEGER

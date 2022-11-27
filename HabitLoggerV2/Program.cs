@@ -4,11 +4,10 @@ namespace HabitLogger
 {
     internal class Program
     {
+        // path for Sqlite connection
+        static string connectionString = @"Data Source=C:\Users\joeyj\Documents\VSProjects\CSharpAcademy\HabitLoggerV2\HabitLoggerV2\habit-Tracker.db";
         static void Main(string[] args)
         {
-            // path for Sqlite connection
-            string connectionString = @"Data Source=C:\Users\joeyj\Documents\VSProjects\CSharpAcademy\HabitLoggerV2\HabitLoggerV2\habit-Tracker.db";
-
             using (var connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
@@ -24,6 +23,153 @@ namespace HabitLogger
                 tableCmd.ExecuteNonQuery();
                 connection.Close();
             }
+
+            GetUserInput();
+        }
+
+        static void GetUserInput()
+        {
+            bool close = false;
+
+            ShowMenu();
+
+            while (!close)
+            {
+                string commandInput = Console.ReadLine();
+
+                switch (commandInput)
+                {
+                    case "0":
+                        Console.Clear();
+                        Console.WriteLine("Goodbye!");
+                        close = true;
+                        break;
+                    case "1":
+                        Console.Clear();
+                        GetAllRecords();
+                        break;
+                    case "2":
+                        Console.Clear();
+                        InsertRecord();
+                        break;
+                    //case "3":
+                    //    Console.Clear();
+                    //    UpdateRecord();
+                    //    break;
+                    //case "4":
+                    //    Console.Clear();
+                    //    DeleteRecord();
+                    //    break;
+                    default:
+                        Console.WriteLine("Invalid command, please try again.");
+                        break;
+                }
+            }
+        }
+
+        private static void InsertRecord()
+        {
+            // Grab the time when InsertRecord is initiated
+            string time = DateTime.Now.ToString();
+
+            // Prompt user for amount of water consumed
+            string quantity = GetNumberInput();
+
+            // To modify/create tables, a new connection must be made/closed, with a tableCmd being created/executed
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                var tableCmd = connection.CreateCommand();
+
+                // SQL command to be executed stored in the tableCmd variable
+                tableCmd.CommandText = $"INSERT INTO drinking_water(date, quantity) VALUES('{time}', {quantity})";
+
+                tableCmd.ExecuteNonQuery();
+                connection.Close();
+            }
+
+            ShowMenu();
+        }
+
+        public static void GetAllRecords()
+        {
+            // As with all table manipulation, a new connection must be created
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                // Boilerplate code for creating a new connection {Open, and initialize a tableCmd}
+                connection.Open();
+                var tableCmd = connection.CreateCommand();
+
+                // List of custom object to store data from table to present to user
+                List<DrinkingWater> tableData = new();
+
+                tableCmd.CommandText = $"SELECT * FROM drinking_water";
+
+                // Create a reader object which iterates through a table
+                SqliteDataReader reader = tableCmd.ExecuteReader(); 
+
+                // Standard check for data
+                if (reader.HasRows)
+                {
+                    // Loop to iterate through all data of the table
+                    while (reader.Read())
+                    {
+                        // For each row in the table, create a new object to add to the List<T>
+                        tableData.Add(new DrinkingWater
+                        {
+                            Id = reader.GetInt32(0),
+                            Date = reader.GetString(1),
+                            Quantity = reader.GetDouble(2)
+                        });
+                    }
+                } else
+                {
+                    Console.WriteLine("No rows exist in table");
+                }
+                connection.Close();
+
+                Console.WriteLine("-------------------------------------\n");
+
+                foreach (var row in tableData)
+                {
+                    Console.WriteLine($"{row.Id} - {row.Date} - Quantity: {row.Quantity}");
+                }
+
+                Console.WriteLine("-------------------------------------\n");
+
+                Console.WriteLine("\n\nPress any key to go back to main menu");
+                Console.ReadLine();
+                ShowMenu();
+            }
+        }
+
+        private static string GetNumberInput()
+        {
+            Console.WriteLine("Please enter amount of water consumed, in measurement of your choice.");
+
+            string userInput = Console.ReadLine();
+            return userInput;
+        }
+
+        // Seperate ShowMenu() method to allow seamless transition between functions -- leaving InsertRecord() to go back to menu
+        // When called GetUserInput() within InsertRecord(), showed nested menus and required 'exiting' twice
+        private static void ShowMenu()
+        {
+            Console.Clear();
+            Console.WriteLine(@"--------------MAIN MENU--------------
+0 - Close the application
+1 - View all records
+2 - Insert record
+3 - Update record
+4 - Delete record
+-------------------------------------");
         }
     }
+}
+
+public class DrinkingWater
+{
+    public int Id { get; set; }
+    public string Date { get; set; }
+    public double Quantity { get; set; }
 }

@@ -91,6 +91,26 @@ namespace HabitLogger
             ShowMenu();
         }
 
+        private static void DeleteRecord()
+        {
+            Console.Clear();
+            GetAllRecords();
+
+            Console.WriteLine("Enter id of table entry to delete:");
+            int idToDelete = int.Parse(Console.ReadLine());
+
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                var tableCmd = connection.CreateCommand();
+
+                tableCmd.CommandText = $"DELETE FROM drinking_water(id) VALUES({idToDelete})";
+
+                tableCmd.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+
         public static void GetAllRecords()
         {
             // As with all table manipulation, a new connection must be created

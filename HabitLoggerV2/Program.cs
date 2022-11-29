@@ -47,6 +47,10 @@ namespace HabitLogger
                     case "1":
                         Console.Clear();
                         GetAllRecords();
+                        Console.WriteLine("Enter any key to go back to menu");
+                        Console.ReadLine();
+                        Console.Clear();
+                        ShowMenu();
                         break;
                     case "2":
                         Console.Clear();
@@ -56,10 +60,10 @@ namespace HabitLogger
                     //    Console.Clear();
                     //    UpdateRecord();
                     //    break;
-                    //case "4":
-                    //    Console.Clear();
-                    //    DeleteRecord();
-                    //    break;
+                    case "4":
+                        Console.Clear();
+                        DeleteRecord();
+                        break;
                     default:
                         Console.WriteLine("Invalid command, please try again.");
                         break;
@@ -104,11 +108,13 @@ namespace HabitLogger
                 connection.Open();
                 var tableCmd = connection.CreateCommand();
 
-                tableCmd.CommandText = $"DELETE FROM drinking_water(id) VALUES({idToDelete})";
+                tableCmd.CommandText = $"DELETE FROM drinking_water WHERE Id = '{idToDelete}'";
 
                 tableCmd.ExecuteNonQuery();
                 connection.Close();
             }
+
+            ShowMenu();
         }
 
         public static void GetAllRecords()
@@ -156,10 +162,6 @@ namespace HabitLogger
                 }
 
                 Console.WriteLine("-------------------------------------\n");
-
-                Console.WriteLine("\n\nPress any key to go back to main menu");
-                Console.ReadLine();
-                ShowMenu();
             }
         }
 

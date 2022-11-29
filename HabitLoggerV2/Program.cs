@@ -92,7 +92,9 @@ namespace HabitLogger
                 connection.Close();
             }
 
-            ShowMenu();
+            Console.WriteLine($"Successfully entered {quantity} at {time}");
+
+            ReturnToMenu();
         }
 
         private static void DeleteRecord()
@@ -110,11 +112,18 @@ namespace HabitLogger
 
                 tableCmd.CommandText = $"DELETE FROM drinking_water WHERE Id = '{idToDelete}'";
 
-                tableCmd.ExecuteNonQuery();
+                int rowsChanged = tableCmd.ExecuteNonQuery();
+                if (rowsChanged == 0)
+                {
+                    Console.WriteLine($"Record with ID {idToDelete} does not exist");
+                    ReturnToMenu();
+                }
                 connection.Close();
             }
 
-            ShowMenu();
+            Console.WriteLine($"Record with ID {idToDelete} was succesfully deleted.");
+
+            ReturnToMenu();
         }
 
         public static void GetAllRecords()
@@ -185,6 +194,13 @@ namespace HabitLogger
 3 - Update record
 4 - Delete record
 -------------------------------------");
+        }
+
+        private static void ReturnToMenu()
+        {
+            Console.WriteLine("Press any key to return to menu");
+            Console.ReadLine();
+            ShowMenu();
         }
     }
 }

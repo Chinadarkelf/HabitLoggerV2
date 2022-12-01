@@ -100,33 +100,35 @@ namespace HabitLogger
         private static void DeleteRecord()
         {
             Console.Clear();
-            GetAllRecords();
+            if (GetAllRecords() == 1) {
+                Console.WriteLine("Enter id of table entry to delete:");
+                int idToDelete = int.Parse(Console.ReadLine());
 
-            Console.WriteLine("Enter id of table entry to delete:");
-            int idToDelete = int.Parse(Console.ReadLine());
-
-            using (var connection = new SqliteConnection(connectionString))
-            {
-                connection.Open();
-                var tableCmd = connection.CreateCommand();
-
-                tableCmd.CommandText = $"DELETE FROM drinking_water WHERE Id = '{idToDelete}'";
-
-                int rowsChanged = tableCmd.ExecuteNonQuery();
-                if (rowsChanged == 0)
+                using (var connection = new SqliteConnection(connectionString))
                 {
-                    Console.WriteLine($"Record with ID {idToDelete} does not exist");
-                    ReturnToMenu();
-                }
-                connection.Close();
-            }
+                    connection.Open();
+                    var tableCmd = connection.CreateCommand();
 
-            Console.WriteLine($"Record with ID {idToDelete} was succesfully deleted.");
+                    tableCmd.CommandText = $"DELETE FROM drinking_water WHERE Id = '{idToDelete}'";
+
+                    int rowsChanged = tableCmd.ExecuteNonQuery();
+                    if (rowsChanged == 0)
+                    {
+                        Console.WriteLine($"Record with ID {idToDelete} does not exist");
+                        ReturnToMenu();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Record with ID {idToDelete} was succesfully deleted.");
+                    }
+                    connection.Close();
+                }
+            }
 
             ReturnToMenu();
         }
 
-        public static void GetAllRecords()
+        public static int GetAllRecords()
         {
             // As with all table manipulation, a new connection must be created
             using (var connection = new SqliteConnection(connectionString))
@@ -160,6 +162,7 @@ namespace HabitLogger
                 } else
                 {
                     Console.WriteLine("No rows exist in table");
+                    return 0;
                 }
                 connection.Close();
 
@@ -171,6 +174,7 @@ namespace HabitLogger
                 }
 
                 Console.WriteLine("-------------------------------------\n");
+                return 1;
             }
         }
 

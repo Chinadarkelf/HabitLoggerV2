@@ -102,27 +102,40 @@ namespace HabitLogger
             Console.Clear();
             if (GetAllRecords() == 1) {
                 Console.WriteLine("Enter id of table entry to delete:");
-                int idToDelete = int.Parse(Console.ReadLine());
-
-                using (var connection = new SqliteConnection(connectionString))
-                {
-                    connection.Open();
-                    var tableCmd = connection.CreateCommand();
-
-                    tableCmd.CommandText = $"DELETE FROM drinking_water WHERE Id = '{idToDelete}'";
-
-                    int rowsChanged = tableCmd.ExecuteNonQuery();
-                    if (rowsChanged == 0)
-                    {
-                        Console.WriteLine($"Record with ID {idToDelete} does not exist");
-                        ReturnToMenu();
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Record with ID {idToDelete} was succesfully deleted.");
-                    }
-                    connection.Close();
+                string response = Console.ReadLine();
+                if (response.Equals("")) {
+                    Console.WriteLine("Invalid response, please try again.");
+                    response = Console.ReadLine();
                 }
+
+                try
+                {
+                    int idToDelete = int.Parse(response);
+
+                    using (var connection = new SqliteConnection(connectionString))
+                    {
+                        connection.Open();
+                        var tableCmd = connection.CreateCommand();
+
+                        tableCmd.CommandText = $"DELETE FROM drinking_water WHERE Id = '{idToDelete}'";
+
+                        int rowsChanged = tableCmd.ExecuteNonQuery();
+                        if (rowsChanged == 0)
+                        {
+                            Console.WriteLine($"Record with ID {idToDelete} does not exist");
+                            ReturnToMenu();
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Record with ID {idToDelete} was succesfully deleted.");
+                        }
+                        connection.Close();
+                    }
+                }
+                catch (Exception ex) {
+                    Console.WriteLine(ex.Message);
+                }
+                
             }
 
             ReturnToMenu();

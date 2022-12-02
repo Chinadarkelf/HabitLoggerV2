@@ -56,10 +56,10 @@ namespace HabitLogger
                         Console.Clear();
                         InsertRecord();
                         break;
-                    //case "3":
-                    //    Console.Clear();
-                    //    UpdateRecord();
-                    //    break;
+                    case "3":
+                        Console.Clear();
+                        UpdateRecord();
+                        break;
                     case "4":
                         Console.Clear();
                         DeleteRecord();
@@ -139,6 +139,41 @@ namespace HabitLogger
             }
 
             ReturnToMenu();
+        }
+
+        private static void UpdateRecord()
+        {
+            if (GetAllRecords() == 1)
+            {
+                Console.WriteLine("Enter the id of the record you want to update:");
+                var id = int.Parse(Console.ReadLine());
+                Console.WriteLine($"Enter the amount you would like to change ID {id} to");
+                var input = Console.ReadLine();
+
+                try
+                {
+                    double newAmount = double.Parse(input);
+
+                    using (var connection = new SqliteConnection(connectionString))
+                    {
+                        connection.Open();
+                        var tableCmd = connection.CreateCommand();
+
+                        tableCmd.CommandText = $"UPDATE drinking_water " +
+                                               $"SET Quantity = {newAmount} " +
+                                               $"WHERE Id = {id}";
+
+                        tableCmd.ExecuteNonQuery();
+                        connection.Close();
+                    }
+                } catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+            ReturnToMenu();
+            
         }
 
         public static int GetAllRecords()
